@@ -12,6 +12,8 @@ class _HomeState extends State<Home> {
   final TextEditingController _alturaController = TextEditingController();
   String _retorno;
 
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -51,6 +53,7 @@ class _HomeState extends State<Home> {
     setState(() {
       _pesoController.clear();
       _alturaController.clear();
+      _formKey = GlobalKey<FormState>();
     });
   }
 
@@ -69,45 +72,67 @@ class _HomeState extends State<Home> {
           )
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            children: [
-              const Icon(
-                Icons.person_outline,
-                size: 96,
-                color: Colors.green,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  const Icon(
+                    Icons.person_outline,
+                    size: 96,
+                    color: Colors.green,
+                  ),
+                  TextFormField(
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(
+                      labelText: "Peso (Kg)",
+                    ),
+                    controller: _pesoController,
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "Insira seu peso";
+                      }
+                      return "";
+                    },
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: "Altura (Cm)",
+                    ),
+                    controller: _alturaController,
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "Insira sua altura";
+                      }
+                      return "";
+                    },
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        calcularImc();
+                      }
+                    },
+                    child: const Text("Calcular"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      _retorno,
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+                  )
+                ],
               ),
-              TextField(
-                decoration: const InputDecoration(labelText: "Peso (Kg)"),
-                controller: _pesoController,
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: "Altura (Cm)",
-                ),
-                controller: _alturaController,
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  calcularImc();
-                },
-                child: const Text("Calcular"),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  _retorno,
-                  style: Theme.of(context).textTheme.bodyText2,
-                ),
-              )
-            ],
+            ),
           ),
         ),
       ),
